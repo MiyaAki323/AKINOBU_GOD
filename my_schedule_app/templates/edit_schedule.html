@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>予定の編集</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>📝 予定の編集</h1>
+
+    <form action="{{ url_for('update_schedule', id=schedule.id) }}" method="post">
+        {{ csrf_token() }}  {# CSRF対策している場合のみ #}
+        <p>日付: <input type="date" name="date" value="{{ schedule.date }}" required></p>
+        <p>開始: <input type="time" name="start" value="{{ schedule.start }}"></p>
+        <p>終了: <input type="time" name="end" value="{{ schedule.end }}"></p>
+        <p>カテゴリ:
+            <select name="category">
+                {% for name in categories %}
+                    <option value="{{ name }}" {% if name == schedule.category %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </p>
+        <p>タイトル: <input type="text" name="title" value="{{ schedule.title }}" required></p>
+        <p>メモ: <input type="text" name="note" value="{{ schedule.note }}"></p>
+        <button type="submit">更新</button>
+    </form>
+
+    <p><a href="{{ url_for('date_schedule_view') }}">戻る</a></p>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>時間割</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    body {
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: #f8f9fa;
+      margin: 20px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      text-align: center;
+      padding: 10px;
+    }
+
+    th {
+      background-color: #f1f3f4;
+    }
+
+    .cell-box {
+      background-color: #cfe2ff;
+      color: #003566;
+      border-radius: 5px;
+      padding: 8px;
+      font-weight: bold;
+    }
+
+    .save-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .save-btn:hover {
+      background-color: #3367d6;
+    }
+
+    .back-link {
+      margin-top: 20px;
+      display: inline-block;
+    }
+
+    input[type="text"] {
+      width: 90%;
+      padding: 5px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>🗓 時間割編集</h1>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for msg in messages %}
+          <li>{{ msg }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+
+  <form method="post">
+    <table>
+      <thead>
+        <tr>
+          <th>時限＼曜日</th>
+          {% for day in weekdays %}
+            <th>{{ day }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in range(6) %}
+          <tr>
+            <th>{{ i+1 }}限</th>
+            {% for day in weekdays %}
+              <td>
+                <input type="text" name="{{ day }}_{{ i+1 }}" value="{{ timetable[day][i] }}" placeholder="授業名など">
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button class="save-btn" type="submit">保存</button>
+  </form>
+
+  <a class="back-link" href="{{ url_for('date_schedule_view') }}">← スケジュールに戻る</a>
+</body>
+</html>

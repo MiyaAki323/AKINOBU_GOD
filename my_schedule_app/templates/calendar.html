@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>{{ year }}年 {{ calendar_month_name }} のカレンダー</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        td, th { border: 1px solid #ccc; text-align: center; padding: 8px; vertical-align: top; }
+        .has-schedule { background-color: #eef; }
+    </style>
+</head>
+<body>
+    <h1>{{ year }}年 {{ calendar_month_name }}月</h1>
+
+    <!-- ここに時間割画面へのリンクを追加 -->
+    <p><a href="{{ url_for('timetable_view') }}">🗓️ 時間割管理へ</a></p>
+
+    <table>
+        <tr>
+            <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+        </tr>
+        {% for week in month_days %}
+        <tr>
+            {% for day in week %}
+                {% if day == 0 %}
+                    <td></td>
+                {% else %}
+                    <td class="{% if day in schedules_by_day %}has-schedule{% endif %}">
+                        <strong>{{ day }}</strong><br>
+                        {% for item in schedules_by_day.get(day, []) %}
+                            <div style="background: {{ categories[item.category] }}; padding: 2px; margin: 2px;">
+                                {{ item.title }}
+                            </div>
+                        {% endfor %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

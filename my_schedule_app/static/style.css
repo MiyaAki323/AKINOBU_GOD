@@ -1,0 +1,179 @@
+/* 全体リセット＆フォント設定 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: #f4f6f8;
+  color: #333;
+  line-height: 1.6;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* 見出し */
+h1, h2, h3 {
+  color: #222;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+
+/* コンテナレイアウト */
+.container {
+  display: flex;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto 40px auto;
+}
+
+/* 左右幅指定 */
+.schedule, .calendar {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+  flex: 1;
+}
+
+/* テーブルデザイン */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px 10px;
+  text-align: center;
+  vertical-align: top;
+  transition: background-color 0.3s ease;
+}
+th {
+  background-color: #f0f4f8;
+  font-weight: 600;
+}
+td:hover {
+  background-color: #e8f0fe;
+  cursor: default;
+}
+
+/* イベント（予定）のカード風 */
+.event {
+  background-color: #4285f4;
+  color: white;
+  font-size: 0.85em;
+  padding: 6px 8px;
+  border-radius: 6px;
+  margin-top: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+/* リンクボタン */
+.btn-link {
+  display: inline-block;
+  background-color: #1a73e8;
+  color: white;
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgb(26 115 232 / 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 24px;
+}
+.btn-link:hover {
+  background-color: #155ab6;
+  box-shadow: 0 6px 18px rgb(21 90 182 / 0.6);
+}
+
+/* フォーム */
+form label {
+  display: block;
+  margin-bottom: 12px;
+  font-weight: 600;
+  color: #444;
+}
+form input[type="text"],
+form input[type="date"],
+form input[type="time"],
+form select,
+form textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  margin-top: 4px;
+  transition: border-color 0.3s ease;
+}
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="time"]:focus,
+form select:focus,
+form textarea:focus {
+  outline: none;
+  border-color: #4285f4;
+  box-shadow: 0 0 5px rgba(66, 133, 244, 0.5);
+}
+form textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* 追加ボタン */
+button[type="submit"] {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+  margin-top: 12px;
+}
+button[type="submit"]:hover {
+  background-color: #155ab6;
+}
+
+/* スケジュールリスト */
+.schedule ul {
+  list-style: none;
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 12px;
+  margin-bottom: 24px;
+}
+.schedule li {
+  background: #e3f2fd;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.schedule li a {
+  color: #d93025;
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 12px;
+  transition: color 0.3s ease;
+}
+.schedule li a:hover {
+  color: #a52714;
+}
+
+/* レスポンシブ（画面幅が狭いとき） */
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .schedule, .calendar {
+    width: 100%;
+  }
+}

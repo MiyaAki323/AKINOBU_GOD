@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>日付スケジュールとカレンダー</title>
+    <style>
+        .container {
+            display: flex;
+            gap: 40px;
+        }
+        .schedule, .calendar {
+            width: 50%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+        }
+        .calendar td {
+            height: 80px;
+            vertical-align: top;
+        }
+        .event {
+            font-size: 0.8em;
+            background-color: #eee;
+            margin-top: 4px;
+            padding: 2px;
+        }
+
+        /* ここからボタン風リンクのスタイル */
+        .btn-link {
+            display: inline-block;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(66, 133, 244, 0.5);
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .btn-link:hover {
+            background-color: #3367d6;
+            box-shadow: 0 4px 12px rgba(51, 103, 214, 0.7);
+        }
+
+        /* Styles for today's schedule and timetable */
+        .today-summary {
+            margin-top: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .today-summary h2, .today-summary h3 {
+            margin-bottom: 15px;
+        }
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px 12px;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+        }
+        .category-label {
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.8em;
+            margin-right: 10px;
+        }
+        .timetable-list {
+            list-style: none;
+            padding: 0;
+        }
+        .timetable-list li {
+            background: #f0f4f8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        /* フォームの改善 */
+        .schedule form label {
+            display: block; /* ラベルをブロック要素にして改行 */
+            margin-bottom: 10px; /* ラベルと入力欄の間隔 */
+        }
+        .schedule form input[type="date"],
+        .schedule form input[type="time"],
+        .schedule form input[type="text"],
+        .schedule form select,
+        .schedule form textarea {
+            width: calc(100% - 10px); /* 親要素に合わせる */
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* パディングを含めて幅を計算 */
+        }
+        .schedule form button[type="submit"] {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* 緑系のボタン */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .schedule form button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        /* 完了ボタンのスタイル */
+        .complete-btn {
+            background-color: #007bff; /* 青系のボタン */
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+        .complete-btn:hover {
+            background-color: #0056b3;
+        }
+        .schedule-item-actions {
+            display: inline-block;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>日付スケジュール管理</h1>
+
+    <a href="{{ url_for('timetable_view') }}" class="btn-link">🗓️ 時間割管理へ</a>
+
+    <div class="container">
+        <div class="schedule">
+            <h2>登録された予定</h2>
+            <ul>
+                {% for item in schedules %}
+                <li>
+                    {{ item.date }} {{ item.start }}〜{{ item.end }}  
+                    <strong>{{ item.title }}</strong>（{{ item.category }}）
+                    <span class="schedule-item-actions">
+                        <a href="{{ url_for('delete_date_schedule', idx=loop.index0) }}">削除</a>
+                        <button class="complete-btn" onclick="location.href='{{ url_for('complete_date_schedule', idx=loop.index0) }}'">完了</button>
+                    </span>
+                </li>
+                {% else %}
+                <li>未完了の予定はありません。</li>
+                {% endfor %}
+            </ul>
+
+            <h3>予定を追加</h3>
+            <form action="{{ url_for('add_date_schedule') }}" method="POST">
+                <label>日付: 
+                    <input type="date" name="date" value="{{ today }}" min="{{ today }}" max="{{ today_plus_one_year }}" required>
+                </label><br>
+                <label>開始時刻: 
+                    <input type="time" name="start" value="{{ current_time }}" required>
+                </label><br>
+                <label>終了時刻: 
+                    <input type="time" name="end" value="{{ current_time }}" required>
+                </label><br>
+                <label>カテゴリ:
+                    <select name="category" required>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}">{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </label><br>
+                <label>タイトル: 
+                    <input type="text" name="title" placeholder="例: 定期ミーティング" required>
+                </label><br>
+                <label>メモ: 
+                    <textarea name="note" placeholder="例: 資料準備、アジェンダ確認など"></textarea>
+                </label><br>
+                <button type="submit">追加</button>
+            </form>
+        </div>
+
+        <div class="calendar">
+            <h2>{{ year }}年 {{ calendar_month_name }}</h2>
+            <table>
+                <tr>
+                    <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
+                </tr>
+                {% for week in month_days %}
+                <tr>
+                    {% for day in week %}
+                    <td>
+                        {% if day != 0 %}
+                            <strong>{{ day }}</strong>
+                            {% if day in schedules_by_day %}
+                                {% for item in schedules_by_day[day] %}
+                                    <div class="event" style="background-color:{{ categories[item.category] }}">
+                                        {{ item.title }}
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <div class="today-summary">
+        <h2>{{ today }} ({{ weekday }}) の今日の予定と時間割</h2>
+
+        <h3 class="section-subtitle">今日の予定</h3>
+        {% if today_schedules %}
+          {% for s in today_schedules %}
+          <div class="schedule-item">
+            <span class="category-label" style="background-color: {{ categories[s.category] if s.category in categories else '#cccccc' }};">
+              {{ s.category }}
+            </span>
+            <strong>{{ s.start }}〜{{ s.end }}</strong> {{ s.title }}
+            {% if s.note %}<br><small>{{ s.note }}</small>{% endif %}
+          </div>
+          {% endfor %}
+        {% else %}
+          <p>今日の予定はありません。</p>
+        {% endif %}
+
+        <h3 class="section-subtitle">時間割 ({{ weekday }})</h3>
+        <ul class="timetable-list">
+          {% for i, subj in enumerate(today_timetable, 1) %}
+            {% if subj %}
+            <li>{{ i }}限: {{ subj }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+    </div>
+
+    <script>
+        // JavaScriptで現在の時刻を取得し、デフォルト値として設定する
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            const currentHour = String(now.getHours()).padStart(2, '0');
+            const currentMinute = String(now.getMinutes()).padStart(2, '0');
+            const currentTime = `${currentHour}:${currentMinute}`;
+
+            // 開始時刻と終了時刻のデフォルト値を設定
+            const startTimeInput = document.querySelector('input[name="start"]');
+            const endTimeInput = document.querySelector('input[name="end"]');
+
+            if (startTimeInput) {
+                startTimeInput.value = currentTime;
+            }
+            if (endTimeInput) {
+                // 終了時刻をデフォルトで開始時刻の1時間後に設定することも可能
+                const nextHour = String(now.getHours() + 1).padStart(2, '0');
+                const nextTime = `${nextHour}:${currentMinute}`;
+                endTimeInput.value = nextTime;
+            }
+        });
+    </script>
+</body>
+</html>

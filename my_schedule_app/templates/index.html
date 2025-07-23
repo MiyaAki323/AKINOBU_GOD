@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}今日の予定{% endblock %}
+
+{% block content %}
+<h2>{{ today }} ({{ weekday }}) の予定</h2>
+
+{% if schedules %}
+  {% for s in schedules %}
+  <div class="schedule-item">
+    <span class="category-label" style="background-color: {{ categories[s.category] if s.category in categories else '#cccccc' }};">
+      {{ s.category }}
+    </span>
+    <strong>{{ s.start }}〜{{ s.end }}</strong> {{ s.title }}
+    {% if s.note %}<br /><small>{{ s.note }}</small>{% endif %}
+  </div>
+  {% endfor %}
+{% else %}
+  <p>今日の予定はありません。</p>
+{% endif %}
+
+<h3>時間割 ({{ weekday }})</h3>
+<ul>
+  {% for i, subj in enumerate(timetable, 1) %}
+    {% if subj %}
+    <li>{{ i }}限: {{ subj }}</li>
+    {% endif %}
+  {% endfor %}
+</ul>
+{% endblock %}
